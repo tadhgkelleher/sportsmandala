@@ -1,3 +1,7 @@
+Share
+
+
+You said:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -114,15 +118,17 @@
       }
     };
 
+    // Create a set to ensure unique brand nodes
     const addedBrands = new Set();
     const addedTags = new Set();
 
     items.forEach(item => {
+      // Add the brand node (item) only if it hasn't been added already
       if (!addedBrands.has(item.title)) {
         nodes.add({
           id: item.title,
           label: item.title,
-          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+          title: <h3>${item.title}</h3><ul>${item.tags.map(tag => <li>${tag}</li>).join('')}</ul>,
           group: "item",
           font: { color: '#000000', size: 16, bold: true }
         });
@@ -130,6 +136,7 @@
       }
 
       item.tags.forEach(tag => {
+        // Add the tag node only if it hasn't been added already
         if (!addedTags.has(tag)) {
           nodes.add({
             id: tag,
@@ -139,12 +146,14 @@
           });
           addedTags.add(tag);
         }
+        // Create an edge between the item and tag
         edges.add({
           from: item.title,
           to: tag,
           color: { color: '#ffffff', highlight: '#ffd700' }
         });
 
+        // Track connections for size calculation
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
         nodeConnections[item.title] = (nodeConnections[item.title] || 0) + 1;
       });
@@ -152,7 +161,8 @@
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = Math.min(30, Math.max(10, connectionCount * 2));  // Adjusted size scaling
+      // Dynamically set the node size based on the connection count
+      node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
       nodes.update(node);
     });
 
@@ -169,20 +179,22 @@
       },
       edges: {
         width: 2,
-        smooth: { type: 'continuous' }
+        smooth: {
+          type: 'continuous'
+        }
       },
       physics: {
-        enabled: false,  // Disabled initially to keep nodes in a circular layout
+        enabled: false,
         solver: 'forceAtlas2Based',
         forceAtlas2Based: {
           gravitationalConstant: -100,
           centralGravity: 0.01,
-          springLength: 200,
-          springConstant: 0.05,
-          damping: 0.4,
-          avoidOverlap: 0.1
+          springLength: 250,
+          springConstant: 0.08
         },
-        stabilization: { iterations: 200 }
+        stabilization: {
+          iterations: 200
+        }
       },
       interaction: {
         hover: true,
@@ -195,12 +207,48 @@
       groups: groups,
       layout: {
         randomSeed: 2,
-        improvedLayout: false,  // Keep circular layout initially
-        hierarchical: false
+        improvedLayout: true
       }
     };
 
     const network = new vis.Network(container, data, options);
+
+    function applyCircularLayout() {
+      const positions = {};
+      const nodeCount = nodes.length;
+      const radius = 300;
+      const angle = (2 * Math.PI) / nodeCount;
+      
+      let i = 0;
+      nodes.forEach((node) => {
+        positions[node.id] = {
+          x: radius * Math.cos(angle * i),
+          y: radius * Math.sin(angle * i)
+        };
+        i++;
+      });
+      
+      network.setOptions({ physics: { enabled: false } });
+      network.moveTo({ scale: 0.3 });
+      network.body.data.nodes.update(
+        nodes.map(node => ({
+          id: node.id,
+          x: positions[node.id].x,
+          y: positions[node.id].y
+        }))
+      );
+    }
+
+    network.moveTo({
+      position: { x: 0, y: 0 },
+      scale: 0.3,
+      animation: {
+        duration: 1000,
+        easingFunction: 'easeInOutQuad'
+      }
+    });
+
+    applyCircularLayout();
 
     const toggleButton = document.querySelector(".toggle-physics-button");
     let isPhysicsEnabled = false;
@@ -208,7 +256,9 @@
     toggleButton.addEventListener("click", function() {
       isPhysicsEnabled = !isPhysicsEnabled;
       network.setOptions({
-        physics: { enabled: isPhysicsEnabled }
+        physics: {
+          enabled: isPhysicsEnabled
+        }
       });
     });
   });
