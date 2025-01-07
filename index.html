@@ -105,43 +105,32 @@
     const edges = new vis.DataSet([]);
     const nodeConnections = {};
 
-    const groups = {
-      item: {
-        color: { background: '#ffd700', border: '#c41e3a' }  // Gold with red border
-      },
-      tag: {
-        color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
-      }
-    };
-
-    // Create a set to ensure unique brand nodes
-    const addedBrands = new Set();
-    const addedTags = new Set();
+    // Create a set to ensure unique nodes
+    const addedNodes = new Set();
 
     items.forEach(item => {
-      // Add the brand node (item) only if it hasn't been added already
-      if (!addedBrands.has(item.title)) {
+      // Add the item node only if it hasn't been added already
+      if (!addedNodes.has(item.title)) {
         nodes.add({
           id: item.title,
           label: item.title,
-          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
-          group: "item",
+          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`  ,
           font: { color: '#000000', size: 16, bold: true }
         });
-        addedBrands.add(item.title);
+        addedNodes.add(item.title);
       }
 
       item.tags.forEach(tag => {
         // Add the tag node only if it hasn't been added already
-        if (!addedTags.has(tag)) {
+        if (!addedNodes.has(tag)) {
           nodes.add({
             id: tag,
             label: tag,
-            group: "tag",
             font: { color: '#ffffff', size: 14 }
           });
-          addedTags.add(tag);
+          addedNodes.add(tag);
         }
+
         // Create an edge between the item and tag
         edges.add({
           from: item.title,
@@ -155,9 +144,9 @@
       });
     });
 
+    // Set size of all nodes based on connections
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      // Dynamically set the node size based on the connection count
       node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
       nodes.update(node);
     });
@@ -200,7 +189,6 @@
         zoomSpeed: 0.5,
         tooltipDelay: 200
       },
-      groups: groups,
       layout: {
         randomSeed: 2,
         improvedLayout: true
@@ -253,11 +241,19 @@
       isPhysicsEnabled = !isPhysicsEnabled;
       network.setOptions({
         physics: {
-          enabled: isPhysicsEnabled
+          enabled: isPhysicsEnabled,
+          solver: 'forceAtlas2Based',
+          forceAtlas2Based: {
+            gravitationalConstant: -100,
+            centralGravity: 0.01,
+            springLength: 150,
+            springConstant: 0.08
+          }
         }
       });
     });
   });
 </script>
+
 </body>
 </html>
