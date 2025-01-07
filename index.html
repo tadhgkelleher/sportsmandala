@@ -114,43 +114,44 @@
       }
     };
 
-    // Create a map to ensure each node is only added once
-    const addedNodes = new Set();
+    // Create a set to ensure unique brand nodes
+    const addedBrands = new Set();
+    const addedTags = new Set();
 
     items.forEach(item => {
-      // Add the item node only if it hasn't been added already
-      if (!addedNodes.has(item.id)) {
+      // Add the brand node (item) only if it hasn't been added already
+      if (!addedBrands.has(item.title)) {
         nodes.add({
-          id: item.id,
+          id: item.title,
           label: item.title,
           title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
           group: "item",
           font: { color: '#000000', size: 16, bold: true }
         });
-        addedNodes.add(item.id);
+        addedBrands.add(item.title);
       }
 
       item.tags.forEach(tag => {
         // Add the tag node only if it hasn't been added already
-        if (!addedNodes.has(tag)) {
+        if (!addedTags.has(tag)) {
           nodes.add({
             id: tag,
             label: tag,
             group: "tag",
             font: { color: '#ffffff', size: 14 }
           });
-          addedNodes.add(tag);
+          addedTags.add(tag);
         }
         // Create an edge between the item and tag
         edges.add({
-          from: item.id,
+          from: item.title,
           to: tag,
           color: { color: '#ffffff', highlight: '#ffd700' }
         });
 
         // Track connections for size calculation
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
-        nodeConnections[item.id] = (nodeConnections[item.id] || 0) + 1;
+        nodeConnections[item.title] = (nodeConnections[item.title] || 0) + 1;
       });
     });
 
@@ -250,10 +251,13 @@
 
     toggleButton.addEventListener("click", function() {
       isPhysicsEnabled = !isPhysicsEnabled;
-      network.setOptions({ physics: { enabled: isPhysicsEnabled } });
+      network.setOptions({
+        physics: {
+          enabled: isPhysicsEnabled
+        }
+      });
     });
   });
 </script>
-
 </body>
 </html>
