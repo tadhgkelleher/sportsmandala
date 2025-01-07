@@ -114,12 +114,10 @@
       }
     };
 
-    // Create a set to ensure unique brand nodes
     const addedBrands = new Set();
     const addedTags = new Set();
 
     items.forEach(item => {
-      // Add the brand node (item) only if it hasn't been added already
       if (!addedBrands.has(item.title)) {
         nodes.add({
           id: item.title,
@@ -132,7 +130,6 @@
       }
 
       item.tags.forEach(tag => {
-        // Add the tag node only if it hasn't been added already
         if (!addedTags.has(tag)) {
           nodes.add({
             id: tag,
@@ -142,14 +139,12 @@
           });
           addedTags.add(tag);
         }
-        // Create an edge between the item and tag
         edges.add({
           from: item.title,
           to: tag,
           color: { color: '#ffffff', highlight: '#ffd700' }
         });
 
-        // Track connections for size calculation
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
         nodeConnections[item.title] = (nodeConnections[item.title] || 0) + 1;
       });
@@ -157,8 +152,7 @@
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      // Dynamically set the node size based on the connection count
-      node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
+      node.size = Math.max(10, connectionCount * 3);
       nodes.update(node);
     });
 
@@ -175,9 +169,7 @@
       },
       edges: {
         width: 2,
-        smooth: {
-          type: 'continuous'
-        }
+        smooth: { type: 'continuous' }
       },
       physics: {
         enabled: false,
@@ -185,12 +177,10 @@
         forceAtlas2Based: {
           gravitationalConstant: -100,
           centralGravity: 0.01,
-          springLength: 150,
-          springConstant: 0.08
+          springLength: 200,  // Increased spring length for better spread
+          springConstant: 0.05
         },
-        stabilization: {
-          iterations: 200
-        }
+        stabilization: { iterations: 200 }
       },
       interaction: {
         hover: true,
@@ -201,10 +191,7 @@
         tooltipDelay: 200
       },
       groups: groups,
-      layout: {
-        randomSeed: 2,
-        improvedLayout: true
-      }
+      layout: { randomSeed: 2, improvedLayout: true }
     };
 
     const network = new vis.Network(container, data, options);
@@ -212,9 +199,9 @@
     function applyCircularLayout() {
       const positions = {};
       const nodeCount = nodes.length;
-      const radius = 300;
+      const radius = 400;  // Increased radius for more spread
       const angle = (2 * Math.PI) / nodeCount;
-      
+
       let i = 0;
       nodes.forEach((node) => {
         positions[node.id] = {
@@ -223,7 +210,7 @@
         };
         i++;
       });
-      
+
       network.setOptions({ physics: { enabled: false } });
       network.moveTo({ scale: 0.3 });
       network.body.data.nodes.update(
@@ -238,10 +225,7 @@
     network.moveTo({
       position: { x: 0, y: 0 },
       scale: 0.3,
-      animation: {
-        duration: 1000,
-        easingFunction: 'easeInOutQuad'
-      }
+      animation: { duration: 1000, easingFunction: 'easeInOutQuad' }
     });
 
     applyCircularLayout();
@@ -252,9 +236,7 @@
     toggleButton.addEventListener("click", function() {
       isPhysicsEnabled = !isPhysicsEnabled;
       network.setOptions({
-        physics: {
-          enabled: isPhysicsEnabled
-        }
+        physics: { enabled: isPhysicsEnabled }
       });
     });
   });
