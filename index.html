@@ -68,8 +68,6 @@
 </head>
 <body>
 
-
-
 <div class="sponsorship-heading">Our Sponsorship Network</div>
 
 <div id="connections-graph-container">
@@ -122,7 +120,6 @@
         label: item.title,
         title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
         group: "item",
-        size: item.tags.length * 3,
         font: { color: '#000000', size: 16, bold: true }
       };
       nodes.add(itemNode);
@@ -150,7 +147,8 @@
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = Math.max(10, connectionCount * 3);
+      // Dynamically set the node size based on the connection count
+      node.size = Math.max(10, connectionCount * 3);  // Adjust multiplier for size scaling if needed
       nodes.update(node);
     });
 
@@ -243,11 +241,7 @@
 
     toggleButton.addEventListener("click", function() {
       isPhysicsEnabled = !isPhysicsEnabled;
-      if (isPhysicsEnabled) {
-        network.setOptions({ physics: { enabled: true } });
-      } else {
-        applyCircularLayout();
-      }
+      network.setOptions({ physics: { enabled: isPhysicsEnabled } });
     });
   });
 </script>
