@@ -152,7 +152,7 @@
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = Math.min(20, Math.max(10, connectionCount * 2));  // Adjusted size scaling
+      node.size = Math.min(30, Math.max(10, connectionCount * 2));  // Adjusted size scaling
       nodes.update(node);
     });
 
@@ -178,7 +178,9 @@
           gravitationalConstant: -100,
           centralGravity: 0.01,
           springLength: 200,  // Increased spring length for better spread
-          springConstant: 0.05
+          springConstant: 0.05,
+          damping: 0.4,  // Added damping for better spread control
+          avoidOverlap: 0.1  // Prevent nodes from overlapping
         },
         stabilization: { iterations: 200 }
       },
@@ -195,40 +197,6 @@
     };
 
     const network = new vis.Network(container, data, options);
-
-    function applyCircularLayout() {
-      const positions = {};
-      const nodeCount = nodes.length;
-      const radius = 500;  // Increased radius for more spread
-      const angle = (2 * Math.PI) / nodeCount;
-
-      let i = 0;
-      nodes.forEach((node) => {
-        positions[node.id] = {
-          x: radius * Math.cos(angle * i),
-          y: radius * Math.sin(angle * i)
-        };
-        i++;
-      });
-
-      network.setOptions({ physics: { enabled: false } });
-      network.moveTo({ scale: 0.3 });
-      network.body.data.nodes.update(
-        nodes.map(node => ({
-          id: node.id,
-          x: positions[node.id].x,
-          y: positions[node.id].y
-        }))
-      );
-    }
-
-    network.moveTo({
-      position: { x: 0, y: 0 },
-      scale: 0.3,
-      animation: { duration: 1000, easingFunction: 'easeInOutQuad' }
-    });
-
-    applyCircularLayout();
 
     const toggleButton = document.querySelector(".toggle-physics-button");
     let isPhysicsEnabled = false;
