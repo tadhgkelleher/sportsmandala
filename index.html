@@ -114,32 +114,41 @@
       }
     };
 
+    // Create a map to ensure each node is only added once
+    const addedNodes = new Set();
+
     items.forEach(item => {
-      const itemNode = {
-        id: item.id,
-        label: item.title,
-        title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
-        group: "item",
-        font: { color: '#000000', size: 16, bold: true }
-      };
-      nodes.add(itemNode);
+      // Add the item node only if it hasn't been added already
+      if (!addedNodes.has(item.id)) {
+        nodes.add({
+          id: item.id,
+          label: item.title,
+          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+          group: "item",
+          font: { color: '#000000', size: 16, bold: true }
+        });
+        addedNodes.add(item.id);
+      }
 
       item.tags.forEach(tag => {
-        const tagNode = nodes.get(tag);
-        if (!tagNode) {
-          nodes.add({ 
-            id: tag, 
-            label: tag, 
+        // Add the tag node only if it hasn't been added already
+        if (!addedNodes.has(tag)) {
+          nodes.add({
+            id: tag,
+            label: tag,
             group: "tag",
             font: { color: '#ffffff', size: 14 }
           });
+          addedNodes.add(tag);
         }
-        edges.add({ 
-          from: item.id, 
+        // Create an edge between the item and tag
+        edges.add({
+          from: item.id,
           to: tag,
           color: { color: '#ffffff', highlight: '#ffd700' }
         });
 
+        // Track connections for size calculation
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
         nodeConnections[item.id] = (nodeConnections[item.id] || 0) + 1;
       });
