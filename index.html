@@ -152,7 +152,7 @@
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = Math.max(10, connectionCount * 3);
+      node.size = Math.min(20, Math.max(10, connectionCount * 2));  // Adjusted size scaling
       nodes.update(node);
     });
 
@@ -172,7 +172,7 @@
         smooth: { type: 'continuous' }
       },
       physics: {
-        enabled: false,
+        enabled: true,  // Enable physics for better node spread
         solver: 'forceAtlas2Based',
         forceAtlas2Based: {
           gravitationalConstant: -100,
@@ -199,7 +199,7 @@
     function applyCircularLayout() {
       const positions = {};
       const nodeCount = nodes.length;
-      const radius = 400;  // Increased radius for more spread
+      const radius = 500;  // Increased radius for more spread
       const angle = (2 * Math.PI) / nodeCount;
 
       let i = 0;
