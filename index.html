@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sports League Network</title>
+  <title>Branding Sports Sponsorship</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
   <style>
     #connections-graph-container {
@@ -49,12 +49,21 @@
     .toggle-physics-button:active {
       transform: translateY(1px);
     }
+
+    h1 {
+      color: #ffd700;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
   </style>
 </head>
 <body>
 
+<h1>Branding Sports Sponsorship</h1>
+
 <div id="connections-graph-container">
-  <button class="toggle-physics-button">Scramble Teams</button>
+  <button class="toggle-physics-button">Push Button</button>
   <div id="connections-graph"></div>
 </div>
 
@@ -62,21 +71,10 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const items = [
-      { id: 1, title: "New York Yankees", tags: ["AL East", "MLB", "World Series Champions", "Baseball", "27 Titles"] },
-      { id: 2, title: "Boston Red Sox", tags: ["AL East", "MLB", "World Series Champions", "Baseball", "Rivalry: Yankees"] },
-      { id: 3, title: "LA Lakers", tags: ["Western Conference", "NBA", "Basketball", "17 Championships"] },
-      { id: 4, title: "Golden State Warriors", tags: ["Western Conference", "NBA", "Basketball", "Dynasty"] },
-      { id: 5, title: "Manchester United", tags: ["Premier League", "UEFA", "Soccer", "20 League Titles"] },
-      { id: 6, title: "Liverpool FC", tags: ["Premier League", "UEFA", "Soccer", "Rivalry: Man United"] },
-      { id: 7, title: "Green Bay Packers", tags: ["NFC North", "NFL", "Football", "13 Championships"] },
-      { id: 8, title: "Chicago Bears", tags: ["NFC North", "NFL", "Football", "Rivalry: Packers"] }
-    ];
-
-    const brands = [
-      { id: 9, title: "Nike", tags: ["Sponsorship", "Footwear", "Global"] },
-      { id: 10, title: "Adidas", tags: ["Sponsorship", "Footwear", "Global"] },
-      { id: 11, title: "Coca-Cola", tags: ["Partnership", "Beverage", "Global"] },
-      { id: 12, title: "Pepsi", tags: ["Partnership", "Beverage", "Global"] }
+      { id: 1, title: "Nike", tags: ["New York Yankees", "Boston Red Sox", "LA Lakers", "Golden State Warriors"] },
+      { id: 2, title: "Adidas", tags: ["Manchester United", "Liverpool FC", "Green Bay Packers"] },
+      { id: 3, title: "Under Armour", tags: ["Chicago Bears", "LA Lakers", "Green Bay Packers"] },
+      { id: 4, title: "Puma", tags: ["Golden State Warriors", "Manchester United", "Boston Red Sox"] }
     ];
 
     const nodes = new vis.DataSet([]);
@@ -89,9 +87,6 @@
       },
       tag: {
         color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
-      },
-      brand: {
-        color: { background: '#00bfff', border: '#009acd' }  // Light blue with darker border
       }
     };
 
@@ -124,38 +119,6 @@
 
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
         nodeConnections[item.id] = (nodeConnections[item.id] || 0) + 1;
-      });
-    });
-
-    brands.forEach(brand => {
-      const brandNode = {
-        id: brand.id,
-        label: brand.title,
-        title: `<h3>${brand.title}</h3><ul>${brand.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
-        group: "brand",
-        size: brand.tags.length * 3,
-        font: { color: '#000000', size: 16, bold: true }
-      };
-      nodes.add(brandNode);
-
-      brand.tags.forEach(tag => {
-        const tagNode = nodes.get(tag);
-        if (!tagNode) {
-          nodes.add({ 
-            id: tag, 
-            label: tag, 
-            group: "tag",
-            font: { color: '#ffffff', size: 14 }
-          });
-        }
-        edges.add({ 
-          from: brand.id, 
-          to: tag,
-          color: { color: '#ffffff', highlight: '#ffd700' }
-        });
-
-        nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
-        nodeConnections[brand.id] = (nodeConnections[brand.id] || 0) + 1;
       });
     });
 
