@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports League Network</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
+  <style>
+    #connections-graph-container {
+      position: relative;
+      background-color: #1a472a;  /* Dark green background */
+      margin: 0 auto;
+      width: 100%;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #connections-graph {
+      height: 700px;
+      width: 100%;
+      border: 2px solid #ffd700;  /* Gold border */
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .toggle-physics-button {
+      background-color: #c41e3a;  /* Sport red */
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 18px;
+      margin: 0 auto;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 10px;
+      z-index: 9999;
+      transition: background-color 0.3s ease;
+    }
+
+    .toggle-physics-button:hover {
+      background-color: #a01830;
+    }
+
+    .toggle-physics-button:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+<body>
+
+<div id="connections-graph-container">
+  <button class="toggle-physics-button">Scramble Teams</button>
+  <div id="connections-graph"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const items = [
+      { id: 1, title: "New York Yankees", tags: ["AL East", "MLB", "World Series Champions", "Baseball", "27 Titles"] },
+      { id: 2, title: "Boston Red Sox", tags: ["AL East", "MLB", "World Series Champions", "Baseball", "Rivalry: Yankees"] },
+      { id: 3, title: "LA Lakers", tags: ["Western Conference", "NBA", "Basketball", "17 Championships"] },
+      { id: 4, title: "Golden State Warriors", tags: ["Western Conference", "NBA", "Basketball", "Dynasty"] },
+      { id: 5, title: "Manchester United", tags: ["Premier League", "UEFA", "Soccer", "20 League Titles"] },
+      { id: 6, title: "Liverpool FC", tags: ["Premier League", "UEFA", "Soccer", "Rivalry: Man United"] },
+      { id: 7, title: "Green Bay Packers", tags: ["NFC North", "NFL", "Football", "13 Championships"] },
+      { id: 8, title: "Chicago Bears", tags: ["NFC North", "NFL", "Football", "Rivalry: Packers"] }
+    ];
+
+    const brands = [
+      { id: 9, title: "Nike", tags: ["Sponsorship", "Footwear", "Global"] },
+      { id: 10, title: "Adidas", tags: ["Sponsorship", "Footwear", "Global"] },
+      { id: 11, title: "Coca-Cola", tags: ["Partnership", "Beverage", "Global"] },
+      { id: 12, title: "Pepsi", tags: ["Partnership", "Beverage", "Global"] }
+    ];
+
+    const nodes = new vis.DataSet([]);
+    const edges = new vis.DataSet([]);
+    const nodeConnections = {};
+
+    const groups = {
+      item: {
+        color: { background: '#ffd700', border: '#c41e3a' }  // Gold with red border
+      },
+      tag: {
+        color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
+      },
+      brand: {
+        color: { background: '#00bfff', border: '#009acd' }  // Light blue with darker border
+      }
+    };
+
+    items.forEach(item => {
+      const itemNode = {
+        id: item.id,
+        label: item.title,
+        title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+        group: "item",
+        size: item.tags.length * 3,
+        font: { color: '#000000', size: 16, bold: true }
+      };
+      nodes.add(itemNode);
+
+      item.tags.forEach(tag => {
+        const tagNode = nodes.get(tag);
+        if (!tagNode) {
+          nodes.add({ 
+            id: tag, 
+            label: tag, 
+            group: "tag",
+            font: { color: '#ffffff', size: 14 }
+          });
+        }
+        edges.add({ 
+          from: item.id, 
+          to: tag,
+          color: { color: '#ffffff', highlight: '#ffd700' }
+        });
+
+        nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
+        nodeConnections[item.id] = (nodeConnections[item.id] || 0) + 1;
+      });
+    });
+
+    brands.forEach(brand => {
+      const brandNode = {
+        id: brand.id,
+        label: brand.title,
+        title: `<h3>${brand.title}</h3><ul>${brand.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+        group: "brand",
+        size: brand.tags.length * 3,
+        font: { color: '#000000', size: 16, bold: true }
+      };
+      nodes.add(brandNode);
+
+      brand.tags.forEach(tag => {
+        const tagNode = nodes.get(tag);
+        if (!tagNode) {
+          nodes.add({ 
+            id: tag, 
+            label: tag, 
+            group: "tag",
+            font: { color: '#ffffff', size: 14 }
+          });
+        }
+        edges.add({ 
+          from: brand.id, 
+          to: tag,
+          color: { color: '#ffffff', highlight: '#ffd700' }
+        });
+
+        nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
+        nodeConnections[brand.id] = (nodeConnections[brand.id] || 0) + 1;
+      });
+    });
+
+    nodes.forEach(node => {
+      const connectionCount = nodeConnections[node.id] || 0;
+      node.size = Math.max(10, connectionCount * 3);
+      nodes.update(node);
+    });
+
+    const container = document.getElementById("connections-graph");
+    const data = { nodes: nodes, edges: edges };
+
+    const options = {
+      nodes: {
+        shape: 'dot',
+        scaling: {
+          min: 10,
+          max: 30
+        }
+      },
+      edges: {
+        width: 2,
+        smooth: {
+          type: 'continuous'
+        }
+      },
+      physics: {
+        enabled: false,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -100,
+          centralGravity: 0.01,
+          springLength: 150,
+          springConstant: 0.08
+        },
+        stabilization: {
+          iterations: 200
+        }
+      },
+      interaction: {
+        hover: true,
+        zoomView: true,
+        dragView: true,
+        dragNodes: true,
+        zoomSpeed: 0.5,
+        tooltipDelay: 200
+      },
+      groups: groups,
+      layout: {
+        randomSeed: 2,
+        improvedLayout: true
+      }
+    };
+
+    const network = new vis.Network(container, data, options);
+
+    function applyCircularLayout() {
+      const positions = {};
+      const nodeCount = nodes.length;
+      const radius = 300;
+      const angle = (2 * Math.PI) / nodeCount;
+      
+      let i = 0;
+      nodes.forEach((node) => {
+        positions[node.id] = {
+          x: radius * Math.cos(angle * i),
+          y: radius * Math.sin(angle * i)
+        };
+        i++;
+      });
+      
+      network.setOptions({ physics: { enabled: false } });
+      network.moveTo({ scale: 0.3 });
+      network.body.data.nodes.update(
+        nodes.map(node => ({
+          id: node.id,
+          x: positions[node.id].x,
+          y: positions[node.id].y
+        }))
+      );
+    }
+
+    network.moveTo({
+      position: { x: 0, y: 0 },
+      scale: 0.3,
+      animation: {
+        duration: 1000,
+        easingFunction: 'easeInOutQuad'
+      }
+    });
+
+    applyCircularLayout();
+
+    const toggleButton = document.querySelector(".toggle-physics-button");
+    let isPhysicsEnabled = false;
+
+    toggleButton.addEventListener("click", function() {
+      isPhysicsEnabled = !isPhysicsEnabled;
+      if (isPhysicsEnabled) {
+        network.setOptions({ physics: { enabled: true } });
+      } else {
+        applyCircularLayout();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
