@@ -124,7 +124,7 @@
         nodes.add({
           id: item.title,
           label: item.title,
-          title: <h3>${item.title}</h3><ul>${item.tags.map(tag => <li>${tag}</li>).join('')}</ul>,
+          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
           group: "item",
           font: { color: '#000000', size: 16, bold: true }
         });
