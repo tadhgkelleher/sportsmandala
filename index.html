@@ -155,12 +155,17 @@
       });
     });
 
-    nodes.forEach(node => {
-      const connectionCount = nodeConnections[node.id] || 0;
-      // Dynamically set the node size based on the connection count
-      node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
-      nodes.update(node);
-    });
+  // Track connections and adjust node sizes
+nodes.forEach(node => {
+  const connectionCount = nodeConnections[node.id] || 0;
+  // Dynamically set the node size based on the connection count
+  if (node.group === "tag") { // Blue nodes (tags)
+    node.size = Math.max(10, connectionCount * 2); // Increase multiplier for size scaling if needed
+  } else { // Gold nodes (brands)
+    node.size = Math.max(10, connectionCount * 2); // Smaller multiplier for brands
+  }
+  nodes.update(node);
+});
 
     const container = document.getElementById("connections-graph");
     const data = { nodes: nodes, edges: edges };
