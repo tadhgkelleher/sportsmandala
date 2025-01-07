@@ -172,15 +172,15 @@
         smooth: { type: 'continuous' }
       },
       physics: {
-        enabled: true,  // Enable physics for better node spread
+        enabled: false,  // Disabled initially to keep nodes in a circular layout
         solver: 'forceAtlas2Based',
         forceAtlas2Based: {
           gravitationalConstant: -100,
           centralGravity: 0.01,
-          springLength: 200,  // Increased spring length for better spread
+          springLength: 200,
           springConstant: 0.05,
-          damping: 0.4,  // Added damping for better spread control
-          avoidOverlap: 0.1  // Prevent nodes from overlapping
+          damping: 0.4,
+          avoidOverlap: 0.1
         },
         stabilization: { iterations: 200 }
       },
@@ -193,7 +193,11 @@
         tooltipDelay: 200
       },
       groups: groups,
-      layout: { randomSeed: 2, improvedLayout: true }
+      layout: {
+        randomSeed: 2,
+        improvedLayout: false,  // Keep circular layout initially
+        hierarchical: false
+      }
     };
 
     const network = new vis.Network(container, data, options);
