@@ -124,7 +124,7 @@
         nodes.add({
           id: item.title,
           label: item.title,
-          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+          title: <h3>${item.title}</h3><ul>${item.tags.map(tag => <li>${tag}</li>).join('')}</ul>,
           group: "item",
           font: { color: '#000000', size: 16, bold: true }
         });
@@ -155,15 +155,10 @@
       });
     });
 
-    // Update node sizes based on the number of connections
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
       // Dynamically set the node size based on the connection count
-      if (node.group === "item") {
-        node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for scaling gold nodes (brands)
-      } else if (node.group === "tag") {
-        node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for scaling blue nodes (tags)
-      }
+      node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
       nodes.update(node);
     });
 
@@ -175,7 +170,7 @@
         shape: 'dot',
         scaling: {
           min: 10,
-          max: 30  // This allows the nodes to scale more distinctly
+          max: 20
         }
       },
       edges: {
@@ -248,15 +243,21 @@
         easingFunction: 'easeInOutQuad'
       }
     });
-    document.querySelector('.toggle-physics-button').addEventListener("click", () => {
-      if (network.physicsEnabled) {
-        network.setOptions({ physics: { enabled: false } });
-      } else {
-        network.setOptions({ physics: { enabled: true } });
-      }
+
+    applyCircularLayout();
+
+    const toggleButton = document.querySelector(".toggle-physics-button");
+    let isPhysicsEnabled = false;
+
+    toggleButton.addEventListener("click", function() {
+      isPhysicsEnabled = !isPhysicsEnabled;
+      network.setOptions({
+        physics: {
+          enabled: isPhysicsEnabled
+        }
+      });
     });
   });
 </script>
-
 </body>
 </html>
