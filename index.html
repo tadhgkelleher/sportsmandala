@@ -158,7 +158,7 @@
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
       // Dynamically set the node size based on the connection count
-      node.size = Math.max(10, connectionCount * 3);  // Adjust multiplier for size scaling if needed
+      node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
       nodes.update(node);
     });
 
