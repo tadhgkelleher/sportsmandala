@@ -71,7 +71,7 @@
 <div class="sponsorship-heading">Our Sponsorship Network</div>
 
 <div id="connections-graph-container">
-  <button class="toggle-physics-button">Push Button</button>
+  <button class="toggle-physics-button">Toggle Physics</button>
   <div id="connections-graph"></div>
 </div>
 
@@ -114,8 +114,8 @@
         nodes.add({
           id: item.title,
           label: item.title,
-          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`  ,
-          font: { color: '#000000', size: 16, bold: true }
+          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+          font: { color: '#ffd700', size: 16, bold: true }  // Gold color for brand nodes
         });
         addedNodes.add(item.title);
       }
@@ -126,7 +126,7 @@
           nodes.add({
             id: tag,
             label: tag,
-            font: { color: '#ffffff', size: 14 }
+            font: { color: '#ffffff', size: 14 }  // White color for tag nodes
           });
           addedNodes.add(tag);
         }
@@ -135,7 +135,7 @@
         edges.add({
           from: item.title,
           to: tag,
-          color: { color: '#ffffff', highlight: '#ffd700' }
+          color: { color: '#ffd700', highlight: '#ffd700' }
         });
 
         // Track connections for size calculation
