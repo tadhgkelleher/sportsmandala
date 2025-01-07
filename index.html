@@ -77,185 +77,186 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const items = [
-    { id: 1, title: "Nike", tags: ["New York Yankees", "Boston Red Sox", "LA Lakers", "Golden State Warriors", "Manchester United", "Liverpool FC"] },
-    { id: 2, title: "Adidas", tags: ["Manchester United", "Liverpool FC", "Green Bay Packers", "Chicago Bears", "LA Dodgers", "Real Madrid"] },
-    { id: 3, title: "Under Armour", tags: ["Chicago Bears", "LA Lakers", "Green Bay Packers", "Miami Heat", "San Antonio Spurs", "LA Clippers"] },
-    { id: 4, title: "Puma", tags: ["Golden State Warriors", "Manchester United", "Boston Red Sox", "San Francisco Giants", "Chelsea FC"] },
-    { id: 5, title: "Reebok", tags: ["Dallas Cowboys", "LA Lakers", "Toronto Raptors", "Arsenal FC", "Paris Saint-Germain"] },
-    { id: 6, title: "Asics", tags: ["New York Mets", "Philadelphia Eagles", "AC Milan", "FC Barcelona", "Toronto Raptors"] },
-    { id: 7, title: "Nike", tags: ["Golden State Warriors", "Miami Dolphins", "Real Madrid", "LA Lakers", "Manchester City"] },
-    { id: 8, title: "Adidas", tags: ["Liverpool FC", "Seattle Seahawks", "Bayern Munich", "Juventus FC"] },
-    { id: 9, title: "Under Armour", tags: ["New England Patriots", "Cleveland Cavaliers", "Washington Wizards", "LA Galaxy"] },
-    { id: 10, title: "Puma", tags: ["Chelsea FC", "NYC FC", "Boca Juniors", "Orlando Magic"] },
-    { id: 11, title: "Nike", tags: ["Boston Red Sox", "Toronto Raptors", "New England Patriots", "San Antonio Spurs", "Paris Saint-Germain"] },
-    { id: 12, title: "Adidas", tags: ["Juventus FC", "Chicago Cubs", "Washington Redskins", "AC Milan", "Miami Heat"] },
-    { id: 13, title: "Under Armour", tags: ["New York Giants", "Chicago Bulls", "Real Madrid", "LA Clippers"] },
-    { id: 14, title: "Puma", tags: ["Toronto Raptors", "San Francisco 49ers", "AC Milan", "Boca Juniors", "Manchester United"] },
-    { id: 15, title: "Reebok", tags: ["Arsenal FC", "Miami Heat", "Chicago Bulls", "Manchester City", "FC Barcelona"] },
-    { id: 16, title: "Asics", tags: ["New York Knicks", "San Antonio Spurs", "Bayern Munich", "LA Galaxy", "Dallas Mavericks"] },
-    { id: 17, title: "Nike", tags: ["LA Clippers", "Green Bay Packers", "Paris Saint-Germain", "Liverpool FC", "Chelsea FC"] },
-    { id: 18, title: "Adidas", tags: ["Seattle Seahawks", "LA Lakers", "Arsenal FC", "Golden State Warriors", "Real Madrid"] },
-    { id: 19, title: "Under Armour", tags: ["New York Mets", "Miami Dolphins", "Dallas Cowboys", "Washington Wizards", "Boca Juniors"] },
-    { id: 20, title: "Puma", tags: ["LA Dodgers", "Paris Saint-Germain", "Cleveland Cavaliers", "Juventus FC", "Manchester United"] }
-  ];
+  document.addEventListener("DOMContentLoaded", function () {
+    const items = [
+      { id: 1, title: "Nike", tags: ["New York Yankees", "Boston Red Sox", "LA Lakers", "Golden State Warriors", "Manchester United", "Liverpool FC"] },
+      { id: 2, title: "Adidas", tags: ["Manchester United", "Liverpool FC", "Green Bay Packers", "Chicago Bears", "LA Dodgers", "Real Madrid"] },
+      { id: 3, title: "Under Armour", tags: ["Chicago Bears", "LA Lakers", "Green Bay Packers", "Miami Heat", "San Antonio Spurs", "LA Clippers"] },
+      { id: 4, title: "Puma", tags: ["Golden State Warriors", "Manchester United", "Boston Red Sox", "San Francisco Giants", "Chelsea FC"] },
+      { id: 5, title: "Reebok", tags: ["Dallas Cowboys", "LA Lakers", "Toronto Raptors", "Arsenal FC", "Paris Saint-Germain"] },
+      { id: 6, title: "Asics", tags: ["New York Mets", "Philadelphia Eagles", "AC Milan", "FC Barcelona", "Toronto Raptors"] },
+      { id: 7, title: "Nike", tags: ["Golden State Warriors", "Miami Dolphins", "Real Madrid", "LA Lakers", "Manchester City"] },
+      { id: 8, title: "Adidas", tags: ["Liverpool FC", "Seattle Seahawks", "Bayern Munich", "Juventus FC"] },
+      { id: 9, title: "Under Armour", tags: ["New England Patriots", "Cleveland Cavaliers", "Washington Wizards", "LA Galaxy"] },
+      { id: 10, title: "Puma", tags: ["Chelsea FC", "NYC FC", "Boca Juniors", "Orlando Magic"] },
+      { id: 11, title: "Nike", tags: ["Boston Red Sox", "Toronto Raptors", "New England Patriots", "San Antonio Spurs", "Paris Saint-Germain"] },
+      { id: 12, title: "Adidas", tags: ["Juventus FC", "Chicago Cubs", "Washington Redskins", "AC Milan", "Miami Heat"] },
+      { id: 13, title: "Under Armour", tags: ["New York Giants", "Chicago Bulls", "Real Madrid", "LA Clippers"] },
+      { id: 14, title: "Puma", tags: ["Toronto Raptors", "San Francisco 49ers", "AC Milan", "Boca Juniors", "Manchester United"] },
+      { id: 15, title: "Reebok", tags: ["Arsenal FC", "Miami Heat", "Chicago Bulls", "Manchester City", "FC Barcelona"] },
+      { id: 16, title: "Asics", tags: ["New York Knicks", "San Antonio Spurs", "Bayern Munich", "LA Galaxy", "Dallas Mavericks"] },
+      { id: 17, title: "Nike", tags: ["LA Clippers", "Green Bay Packers", "Paris Saint-Germain", "Liverpool FC", "Chelsea FC"] },
+      { id: 18, title: "Adidas", tags: ["Seattle Seahawks", "LA Lakers", "Arsenal FC", "Golden State Warriors", "Real Madrid"] },
+      { id: 19, title: "Under Armour", tags: ["New York Mets", "Miami Dolphins", "Dallas Cowboys", "Washington Wizards", "Boca Juniors"] },
+      { id: 20, title: "Puma", tags: ["LA Dodgers", "Paris Saint-Germain", "Cleveland Cavaliers", "Juventus FC", "Manchester United"] }
+    ];
 
-  const nodes = new vis.DataSet([]);
-  const edges = new vis.DataSet([]);
-  const nodeConnections = {};
+    const nodes = new vis.DataSet([]);
+    const edges = new vis.DataSet([]);
+    const nodeConnections = {};
 
-  const groups = {
-    item: {
-      color: { background: '#ffd700', border: '#c41e3a' }  // Gold with red border
-    },
-    tag: {
-      color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
-    }
-  };
+    const groups = {
+      item: {
+        color: { background: '#ffd700', border: '#c41e3a' }  // Gold with red border
+      },
+      tag: {
+        color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
+      }
+    };
 
-  // Create a set to ensure unique brand nodes
-  const addedBrands = new Set();
-  const addedTags = new Set();
+    // Create a set to ensure unique brand nodes
+    const addedBrands = new Set();
+    const addedTags = new Set();
 
-  // Populate nodes and edges
-  items.forEach(item => {
-    if (!addedBrands.has(item.title)) {
-      nodes.add({
-        id: item.title,
-        label: item.title,
-        title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
-        group: "item",
-        font: { color: '#000000', size: 16, bold: true }
-      });
-      addedBrands.add(item.title);
-    }
-
-    item.tags.forEach(tag => {
-      if (!addedTags.has(tag)) {
+    items.forEach(item => {
+      // Add the brand node (item) only if it hasn't been added already
+      if (!addedBrands.has(item.title)) {
         nodes.add({
-          id: tag,
-          label: tag,
-          group: "tag",
-          font: { color: '#ffffff', size: 14 }
+          id: item.title,
+          label: item.title,
+          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+          group: "item",
+          font: { color: '#000000', size: 16, bold: true }
         });
-        addedTags.add(tag);
+        addedBrands.add(item.title);
       }
 
-      edges.add({
-        from: item.title,
-        to: tag,
-        color: { color: '#ffffff', highlight: '#ffd700' }
-      });
-
-      nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
-      nodeConnections[item.title] = (nodeConnections[item.title] || 0) + 1;
-    });
-  });
-
-  // Calculate the maximum number of connections for scaling
-  const maxTagConnections = Math.max(...Object.values(nodeConnections).filter((_, id) => nodes.get(id).group === 'tag'));
-  const maxBrandConnections = Math.max(...Object.values(nodeConnections).filter((_, id) => nodes.get(id).group === 'item'));
-
-  // Adjust node sizes based on relative connection counts
-  nodes.forEach(node => {
-    const connectionCount = nodeConnections[node.id] || 0;
-    if (node.group === "tag") {
-      node.size = Math.max(10, (connectionCount / maxTagConnections) * 50); // Scale size for tags
-    } else if (node.group === "item") {
-      node.size = Math.max(10, (connectionCount / maxBrandConnections) * 50); // Scale size for brands
-    }
-    nodes.update(node);
-  });
-
-  const container = document.getElementById("connections-graph");
-  const data = { nodes: nodes, edges: edges };
-
-  const options = {
-    nodes: {
-      shape: 'dot',
-      scaling: {
-        min: 10,
-        max: 20
-      }
-    },
-    edges: {
-      width: 2,
-      smooth: {
-        type: 'continuous'
-      }
-    },
-    physics: {
-      enabled: false
-    },
-    interaction: {
-      hover: true,
-      zoomView: true,
-      dragView: true,
-      dragNodes: true,
-      zoomSpeed: 0.5,
-      tooltipDelay: 200
-    },
-    groups: groups,
-    layout: {
-      randomSeed: 2,
-      improvedLayout: true
-    }
-  };
-
-  const network = new vis.Network(container, data, options);
-
-  function applyCircularLayout() {
-    const positions = {};
-    const nodeCount = nodes.length;
-    const radius = 300;
-    const angle = (2 * Math.PI) / nodeCount;
-    
-    let i = 0;
-    nodes.forEach((node) => {
-      positions[node.id] = {
-        x: radius * Math.cos(angle * i),
-        y: radius * Math.sin(angle * i)
-      };
-      i++;
-    });
-    
-    network.setOptions({ physics: { enabled: false } });
-    network.moveTo({ scale: 0.3 });
-    network.body.data.nodes.update(
-      nodes.map(node => ({
-        id: node.id,
-        x: positions[node.id].x,
-        y: positions[node.id].y
-      }))
-    );
-  }
-
-  network.moveTo({
-    position: { x: 0, y: 0 },
-    scale: 0.3,
-    animation: {
-      duration: 1000,
-      easingFunction: 'easeInOutQuad'
-    }
-  });
-
-  applyCircularLayout();
-});
-
-
-    const toggleButton = document.querySelector(".toggle-physics-button");
-    let isPhysicsEnabled = false;
-
-    toggleButton.addEventListener("click", function() {
-      isPhysicsEnabled = !isPhysicsEnabled;
-      network.setOptions({
-        physics: {
-          enabled: isPhysicsEnabled
+      item.tags.forEach(tag => {
+        // Add the tag node only if it hasn't been added already
+        if (!addedTags.has(tag)) {
+          nodes.add({
+            id: tag,
+            label: tag,
+            group: "tag",
+            font: { color: '#ffffff', size: 14 }
+          });
+          addedTags.add(tag);
         }
+        // Create an edge between the item and tag
+        edges.add({
+          from: item.title,
+          to: tag,
+          color: { color: '#ffffff', highlight: '#ffd700' }
+        });
+
+        // Track connections for size calculation
+        nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
+        nodeConnections[item.title] = (nodeConnections[item.title] || 0) + 1;
       });
+    });
+
+    // Update node sizes based on the number of connections
+    nodes.forEach(node => {
+      const connectionCount = nodeConnections[node.id] || 0;
+      // Dynamically set the node size based on the connection count
+      if (node.group === "item") {
+        node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for scaling gold nodes (brands)
+      } else if (node.group === "tag") {
+        node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for scaling blue nodes (tags)
+      }
+      nodes.update(node);
+    });
+
+    const container = document.getElementById("connections-graph");
+    const data = { nodes: nodes, edges: edges };
+
+    const options = {
+      nodes: {
+        shape: 'dot',
+        scaling: {
+          min: 10,
+          max: 30  // This allows the nodes to scale more distinctly
+        }
+      },
+      edges: {
+        width: 2,
+        smooth: {
+          type: 'continuous'
+        }
+      },
+      physics: {
+        enabled: false,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -100,
+          centralGravity: 0.01,
+          springLength: 150,
+          springConstant: 0.08
+        },
+        stabilization: {
+          iterations: 200
+        }
+      },
+      interaction: {
+        hover: true,
+        zoomView: true,
+        dragView: true,
+        dragNodes: true,
+        zoomSpeed: 0.5,
+        tooltipDelay: 200
+      },
+      groups: groups,
+      layout: {
+        randomSeed: 2,
+        improvedLayout: true
+      }
+    };
+
+    const network = new vis.Network(container, data, options);
+
+    function applyCircularLayout() {
+      const positions = {};
+      const nodeCount = nodes.length;
+      const radius = 300;
+      const angle = (2 * Math.PI) / nodeCount;
+      
+      let i = 0;
+      nodes.forEach((node) => {
+        positions[node.id] = {
+          x: radius * Math.cos(angle * i),
+          y: radius * Math.sin(angle * i)
+        };
+        i++;
+      });
+      
+      network.setOptions({ physics: { enabled: false } });
+      network.moveTo({ scale: 0.3 });
+      network.body.data.nodes.update(
+        nodes.map(node => ({
+          id: node.id,
+          x: positions[node.id].x,
+          y: positions[node.id].y
+        }))
+      );
+    }
+
+    network.moveTo({
+      position: { x: 0, y: 0 },
+      scale: 0.3,
+      animation: {
+        duration: 1000,
+        easingFunction: 'easeInOutQuad'
+      }
+    });
+    document.querySelector('.toggle-physics-button').addEventListener("click", () => {
+      if (network.physicsEnabled) {
+        network.setOptions({ physics: { enabled: false } });
+      } else {
+        network.setOptions({ physics: { enabled: true } });
+      }
     });
   });
 </script>
+
 </body>
 </html>
