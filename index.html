@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
   <style>
     #connections-graph-container {
@@ -106,14 +107,14 @@
 
     const groups = {
       item: {
-        color: { background: '#ffd700', border: '#c41e3a' }  // Gold color for brand nodes
+        color: { background: '#ffd700', border: '#c41e3a' }  // Gold with red border
       },
       tag: {
-        color: { background: '#1e90ff', border: '#004d99' }  // Blue for tag nodes
+        color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
       }
     };
 
-    // Create a set to ensure unique brand nodes and tags
+    // Create a set to ensure unique brand nodes
     const addedBrands = new Set();
     const addedTags = new Set();
 
@@ -123,9 +124,9 @@
         nodes.add({
           id: item.title,
           label: item.title,
-          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+          title: <h3>${item.title}</h3><ul>${item.tags.map(tag => <li>${tag}</li>).join('')}</ul>,
           group: "item",
-          font: { color: '#ffd700', size: 16, bold: true }  // Gold color for brand nodes
+          font: { color: '#000000', size: 16, bold: true }
         });
         addedBrands.add(item.title);
       }
@@ -154,10 +155,10 @@
       });
     });
 
-    // Adjust the size of each node based on total connections
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = Math.max(10, connectionCount * 2);  // Ensure node size is proportional to connections
+      // Dynamically set the node size based on the connection count
+      node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
       nodes.update(node);
     });
 
@@ -179,7 +180,17 @@
         }
       },
       physics: {
-        enabled: false
+        enabled: false,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -100,
+          centralGravity: 0.01,
+          springLength: 150,
+          springConstant: 0.08
+        },
+        stabilization: {
+          iterations: 200
+        }
       },
       interaction: {
         hover: true,
@@ -203,7 +214,7 @@
       const nodeCount = nodes.length;
       const radius = 300;
       const angle = (2 * Math.PI) / nodeCount;
-
+      
       let i = 0;
       nodes.forEach((node) => {
         positions[node.id] = {
@@ -212,7 +223,7 @@
         };
         i++;
       });
-
+      
       network.setOptions({ physics: { enabled: false } });
       network.moveTo({ scale: 0.3 });
       network.body.data.nodes.update(
@@ -240,10 +251,13 @@
 
     toggleButton.addEventListener("click", function() {
       isPhysicsEnabled = !isPhysicsEnabled;
-      network.setOptions({ physics: { enabled: isPhysicsEnabled } });
+      network.setOptions({
+        physics: {
+          enabled: isPhysicsEnabled
+        }
+      });
     });
   });
 </script>
-
 </body>
 </html>
