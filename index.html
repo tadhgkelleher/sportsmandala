@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title>Branding Sports Sponsorship</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
   <style>
     #connections-graph-container {
       position: relative;
-      background-color: #1a472a;
+      background-color: #1a472a;  /* Dark green background */
       margin: 0 auto;
       width: 100%;
       padding: 10px;
@@ -20,14 +20,14 @@
     #connections-graph {
       height: 700px;
       width: 100%;
-      border: 2px solid #ffd700;
+      border: 2px solid #ffd700;  /* Gold border */
       border-radius: 8px;
       overflow: hidden;
-      margin-top: -200px;
+      margin-top: -200px; /* Raises the graph by 100px */
     }
 
     .toggle-physics-button {
-      background-color: #c41e3a;
+      background-color: #c41e3a;  /* Sport red */
       color: white;
       padding: 12px 24px;
       border: none;
@@ -69,10 +69,11 @@
 </head>
 <body>
 
+
 <div class="sponsorship-heading">Our Sponsorship Network</div>
 
 <div id="connections-graph-container">
-  <button class="toggle-physics-button">Enable Physics</button>
+  <button class="toggle-physics-button">Push Button</button>
   <div id="connections-graph"></div>
 </div>
 
@@ -108,52 +109,48 @@
 
     const groups = {
       item: {
-        color: { background: '#ffd700', border: '#c41e3a' }
+        color: { background: '#ffd700', border: '#c41e3a' }  // Gold with red border
       },
       tag: {
-        color: { background: '#1e90ff', border: '#004d99' }
+        color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
       }
     };
 
-    const addedBrands = new Set();
-    const addedTags = new Set();
-
     items.forEach(item => {
-      if (!addedBrands.has(item.title)) {
-        nodes.add({
-          id: item.title,
-          label: item.title,
-          title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
-          group: "item",
-          font: { color: '#000000', size: 16, bold: true }
-        });
-        addedBrands.add(item.title);
-      }
+      const itemNode = {
+        id: item.id,
+        label: item.title,
+        title: `<h3>${item.title}</h3><ul>${item.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+        group: "item",
+        size: item.tags.length * 3,
+        font: { color: '#000000', size: 16, bold: true }
+      };
+      nodes.add(itemNode);
 
       item.tags.forEach(tag => {
-        if (!addedTags.has(tag)) {
-          nodes.add({
-            id: tag,
-            label: tag,
+        const tagNode = nodes.get(tag);
+        if (!tagNode) {
+          nodes.add({ 
+            id: tag, 
+            label: tag, 
             group: "tag",
             font: { color: '#ffffff', size: 14 }
           });
-          addedTags.add(tag);
         }
-        edges.add({
-          from: item.title,
+        edges.add({ 
+          from: item.id, 
           to: tag,
           color: { color: '#ffffff', highlight: '#ffd700' }
         });
 
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
-        nodeConnections[item.title] = (nodeConnections[item.title] || 0) + 1;
+        nodeConnections[item.id] = (nodeConnections[item.id] || 0) + 1;
       });
     });
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = Math.max(10, connectionCount * 2);
+      node.size = Math.max(10, connectionCount * 3);
       nodes.update(node);
     });
 
@@ -163,11 +160,16 @@
     const options = {
       nodes: {
         shape: 'dot',
-        scaling: { min: 10, max: 40 }
+        scaling: {
+          min: 10,
+          max: 30
+        }
       },
       edges: {
         width: 2,
-        smooth: { type: 'continuous' }
+        smooth: {
+          type: 'continuous'
+        }
       },
       physics: {
         enabled: false,
@@ -178,7 +180,9 @@
           springLength: 150,
           springConstant: 0.08
         },
-        stabilization: { iterations: 200 }
+        stabilization: {
+          iterations: 200
+        }
       },
       interaction: {
         hover: true,
@@ -197,20 +201,54 @@
 
     const network = new vis.Network(container, data, options);
 
-    let isPhysicsEnabled = false;
-
-    function togglePhysics() {
-      isPhysicsEnabled = !isPhysicsEnabled;
-      network.setOptions({
-        physics: { enabled: isPhysicsEnabled }
+    function applyCircularLayout() {
+      const positions = {};
+      const nodeCount = nodes.length;
+      const radius = 300;
+      const angle = (2 * Math.PI) / nodeCount;
+      
+      let i = 0;
+      nodes.forEach((node) => {
+        positions[node.id] = {
+          x: radius * Math.cos(angle * i),
+          y: radius * Math.sin(angle * i)
+        };
+        i++;
       });
-      const buttonText = isPhysicsEnabled ? "Disable Physics" : "Enable Physics";
-      toggleButton.textContent = buttonText;
-      toggleButton.style.backgroundColor = isPhysicsEnabled ? '#4caf50' : '#c41e3a'; // Change button color
+      
+      network.setOptions({ physics: { enabled: false } });
+      network.moveTo({ scale: 0.3 });
+      network.body.data.nodes.update(
+        nodes.map(node => ({
+          id: node.id,
+          x: positions[node.id].x,
+          y: positions[node.id].y
+        }))
+      );
     }
 
+    network.moveTo({
+      position: { x: 0, y: 0 },
+      scale: 0.3,
+      animation: {
+        duration: 1000,
+        easingFunction: 'easeInOutQuad'
+      }
+    });
+
+    applyCircularLayout();
+
     const toggleButton = document.querySelector(".toggle-physics-button");
-    toggleButton.addEventListener("click", togglePhysics);
+    let isPhysicsEnabled = false;
+
+    toggleButton.addEventListener("click", function() {
+      isPhysicsEnabled = !isPhysicsEnabled;
+      if (isPhysicsEnabled) {
+        network.setOptions({ physics: { enabled: true } });
+      } else {
+        applyCircularLayout();
+      }
+    });
   });
 </script>
 
