@@ -8,7 +8,7 @@
   <style>
     #connections-graph-container {
       position: relative;
-      background-color: #1a472a;  /* Dark green background */
+      background-color: #1a472a;
       margin: 0 auto;
       width: 100%;
       padding: 10px;
@@ -20,16 +20,14 @@
     #connections-graph {
       height: 700px;
       width: 100%;
-      border: 2px solid #ffd700;  /* Gold border */
+      border: 2px solid #ffd700;
       border-radius: 8px;
       overflow: hidden;
-     margin-top: -100px; /* Raises the graph by 100px */
-
-}
+      margin-top: -200px;
     }
 
     .toggle-physics-button {
-      background-color: #c41e3a;  /* Sport red */
+      background-color: #c41e3a;
       color: white;
       padding: 12px 24px;
       border: none;
@@ -74,7 +72,7 @@
 <div class="sponsorship-heading">Our Sponsorship Network</div>
 
 <div id="connections-graph-container">
-  <button class="toggle-physics-button">Push Button</button>
+  <button class="toggle-physics-button">Enable Physics</button>
   <div id="connections-graph"></div>
 </div>
 
@@ -110,19 +108,17 @@
 
     const groups = {
       item: {
-        color: { background: '#ffd700', border: '#c41e3a' }  // Gold with red border
+        color: { background: '#ffd700', border: '#c41e3a' }
       },
       tag: {
-        color: { background: '#1e90ff', border: '#004d99' }  // Bright blue with darker border
+        color: { background: '#1e90ff', border: '#004d99' }
       }
     };
 
-    // Create a set to ensure unique brand nodes
     const addedBrands = new Set();
     const addedTags = new Set();
 
     items.forEach(item => {
-      // Add the brand node (item) only if it hasn't been added already
       if (!addedBrands.has(item.title)) {
         nodes.add({
           id: item.title,
@@ -135,7 +131,6 @@
       }
 
       item.tags.forEach(tag => {
-        // Add the tag node only if it hasn't been added already
         if (!addedTags.has(tag)) {
           nodes.add({
             id: tag,
@@ -145,14 +140,12 @@
           });
           addedTags.add(tag);
         }
-        // Create an edge between the item and tag
         edges.add({
           from: item.title,
           to: tag,
           color: { color: '#ffffff', highlight: '#ffd700' }
         });
 
-        // Track connections for size calculation
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
         nodeConnections[item.title] = (nodeConnections[item.title] || 0) + 1;
       });
@@ -160,8 +153,7 @@
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      // Dynamically set the node size based on the connection count
-      node.size = Math.max(10, connectionCount * 2);  // Adjust multiplier for size scaling if needed
+      node.size = Math.max(10, connectionCount * 2);
       nodes.update(node);
     });
 
@@ -171,16 +163,11 @@
     const options = {
       nodes: {
         shape: 'dot',
-        scaling: {
-          min: 10,
-          max: 40
-        }
+        scaling: { min: 10, max: 40 }
       },
       edges: {
         width: 2,
-        smooth: {
-          type: 'continuous'
-        }
+        smooth: { type: 'continuous' }
       },
       physics: {
         enabled: false,
@@ -191,9 +178,7 @@
           springLength: 150,
           springConstant: 0.08
         },
-        stabilization: {
-          iterations: 200
-        }
+        stabilization: { iterations: 200 }
       },
       interaction: {
         hover: true,
@@ -212,56 +197,22 @@
 
     const network = new vis.Network(container, data, options);
 
-    function applyCircularLayout() {
-      const positions = {};
-      const nodeCount = nodes.length;
-      const radius = 300;
-      const angle = (2 * Math.PI) / nodeCount;
-        const yOffset = -100; // Add an offset to raise the mandala
-      
-      let i = 0;
-      nodes.forEach((node) => {
-        positions[node.id] = {
-          x: radius * Math.cos(angle * i),
-          y: radius * Math.sin(angle * i)
-        };
-        i++;
-      });
-      
-      network.setOptions({ physics: { enabled: false } });
-      network.moveTo({ scale: 0.3 });
-      network.body.data.nodes.update(
-        nodes.map(node => ({
-          id: node.id,
-          x: positions[node.id].x,
-          y: positions[node.id].y
-        }))
-      );
-    }
-
-    network.moveTo({
-      position: { x: 0, y: 0 },
-      scale: 0.3,
-      animation: {
-        duration: 1000,
-        easingFunction: 'easeInOutQuad'
-      }
-    });
-
-    applyCircularLayout();
-
-    const toggleButton = document.querySelector(".toggle-physics-button");
     let isPhysicsEnabled = false;
 
-    toggleButton.addEventListener("click", function() {
+    function togglePhysics() {
       isPhysicsEnabled = !isPhysicsEnabled;
       network.setOptions({
-        physics: {
-          enabled: isPhysicsEnabled
-        }
+        physics: { enabled: isPhysicsEnabled }
       });
-    });
+      const buttonText = isPhysicsEnabled ? "Disable Physics" : "Enable Physics";
+      toggleButton.textContent = buttonText;
+      toggleButton.style.backgroundColor = isPhysicsEnabled ? '#4caf50' : '#c41e3a'; // Change button color
+    }
+
+    const toggleButton = document.querySelector(".toggle-physics-button");
+    toggleButton.addEventListener("click", togglePhysics);
   });
 </script>
+
 </body>
 </html>
